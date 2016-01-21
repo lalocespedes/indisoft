@@ -1,0 +1,2 @@
+angular.module("myApp").run(["$templateCache", function($templateCache) {$templateCache.put("delete.html","borrar?");
+$templateCache.put("nothing.html","<br><div class=\"well\"><h3><i class=\"fa fa-cog fa-spin\"></i> Aun no hace nada :)</h3></div>");}]);

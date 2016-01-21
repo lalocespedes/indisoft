@@ -9,9 +9,9 @@ $container['capsule'] = function ($c) {
 
     $capsule->addConnection([
         'driver' => 'mysql',
-        'host' => getenv('IP'),
+        'host' => getenv('DB_HOST'),
         'database' => getenv('DB_DATABASE'),
-        'username' => getenv('C9_USER'),
+        'username' => getenv('DB_USERNAME'),
         'password' => getenv('DB_PASSWORD'),
         'charset' => 'utf8',
         'collation' => 'utf8_general_ci',

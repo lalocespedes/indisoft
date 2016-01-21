@@ -1,2 +1,5 @@
+/resources/bower_components
+/resources/node_modules
 /.c9
 /vendor
+/.idea
