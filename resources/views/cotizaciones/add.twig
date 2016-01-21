@@ -1,60 +1,78 @@
-<!DOCTYPE html>
-<html ng-app="myApp">
-<head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title></title>
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
-    <link rel="stylesheet" href="/assets/css/main.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ng-dialog/0.5.6/css/ngDialog.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ng-dialog/0.5.6/css/ngDialog-theme-default.min.css">
-</head>
-<body>
-	
-	<div class="container" ng-controller="ListCtrl as lista">
-	    
-	    <h2>Agregar Cotizacion</h2>
-	    
-	    <form>
-	       
-	       <div class="well">
-    	        <div class="dropdown dropdown-scroll">
+{% extends 'templates/default.twig' %}
+
+{% block content %}
+
+    <controller ng-controller="ListCtrl as lista">
+
+        <h2>Agregar Cotizacion</h2>
+
+        <form ng-submit="lista.send()">
+
+            <div class="well">
+                <div class="dropdown dropdown-scroll">
                     <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">Seleccionar Cliente <span class="caret"></span></button>
-                        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-                            <li role="presentation">
-                                <div class="input-group input-group-sm search-control">
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+                        <li role="presentation">
+                            <div class="input-group input-group-sm search-control">
                                      <span class="input-group-addon">
                                         <span class="glyphicon glyphicon-search"></span>
                                     </span>
-                                    <input type="text" class="form-control" placeholder="Buscar" ng-model="query"></input>
-                                </div>
-                            </li>
-                            <li role="presentation" ng-repeat='item in lista.items | filter:query'>
-                                <a href="#" ng-click="lista.cliente(item.CveCliente)"> {{ '{{item.NomCliente }}' }}</a>
-                            </li>
-                        </ul>
+                                <input type="text" class="form-control" placeholder="Buscar" ng-model="lista.query" ng-change="lista.filter()" ng-minlength="2" ng-model-options='{ debounce: 1000 }'>
+                            </div>
+                        </li>
+                        <li role="presentation" ng-repeat='item in lista.clients | filter:lista.query'>
+                            <a href="#" ng-click="lista.cliente(item.CveCliente)"> {{ '{{item.NomCliente }}' }}</a>
+                        </li>
+                    </ul>
                 </div>
-                
+
                 <hr>
                 <div>
                     <strong>Cliente:</strong> <p ng-bind="lista.client_name"></p>
                 </div>
             </div>
-            
-	       <div>
-	            <label>Cantidad</label>
-	            <input type="text" class="form-control"></input>
-	        </div>
-	        
-	    </form>
-	    
-	</div>
-</body>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.8/angular.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.8/angular-resource.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ng-dialog/0.5.6/js/ngDialog.min.js"></script>
-    <script src="/assets/js/app.js"></script>
-</html>
+
+            <hr>
+
+                <table class="table">
+                    <tr>
+                        <th>Clave</th>
+                        <th>Description</th>
+                        <th>Qty</th>
+                        <th>Precio</th>
+                        <th>Total</th>
+                        <th></th>
+                    </tr>
+                    <tr ng-repeat="item in lista.items">
+                        <td><input auto-complete ui-items="products" type="text" ng-model="item.Producto"class="input-small"></td>
+                        <td><input type="text" ng-model="item.DescArt"class="input-small"></td>
+                        <td><input type="number" ng-model="item.CantiOrden" ng-required class="input-mini"></td>
+                        <td><input type="number" ng-model="item.PrecioLista" ng-required class="input-mini"></td>
+                        <td ng-bind="item.CantiOrden * item.PrecioLista | currency"></td>
+                        <td>
+                            <a href ng-click="lista.removeItem($index)">X</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><a href ng-click="lista.addItem()" class="btn btn-small btn-success">add item</a></td>
+                        <td></td>
+                        <td></td>
+                        <td>Total:</td>
+                        <td ng-bind="lista.total() | currency"></td>
+                    </tr>
+                </table>
+
+            <div class="row">
+            <div class="col-md-4 col-md-offset-4">
+                <button class="btn btn-success btn-block"> <i class="fa fa-save fa-3x"></i> </button>
+            </div>
+            </div>
+
+
+        </form>
+
+    </controller>
+
+    {% include 'templates/partials/footer.twig' %}
+
+{% endblock %}
