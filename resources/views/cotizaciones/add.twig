@@ -4,7 +4,20 @@
 
     <controller ng-controller="ListCtrl as cotiz">
 
-        <h2>Agregar Cotizacion</h2>
+
+        <div class="panel panel-default">
+
+
+            <div class="panel-heading">
+                <h4>Cotizacion</h4>
+
+            </div>
+
+            <div class="panel-body">
+
+
+
+
 
         <form ng-submit="cotiz.send()">
 
@@ -106,7 +119,6 @@
                 
             </div>
 
-
             <div class="row">
             <div class="col-md-3 col-md-offset-9">
                 <button class="btn btn-success btn-block"> <i class="fa fa-save fa-3x"></i> </button>
@@ -114,6 +126,11 @@
             </div>
 
         </form>
+
+
+            </div>
+
+        </div>
     </controller>
     {% include 'templates/partials/footer.twig' %}
 {% endblock %}
