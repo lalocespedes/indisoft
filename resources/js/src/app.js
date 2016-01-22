@@ -9,8 +9,8 @@
         'ngResource',
         'ngDialog'
     ]);
-    
-    app.factory('ClientsResource', function ($resource) {
+
+    app.service('ClientsResource', function ($resource) {
 
         return $resource("/index.php/clientes", {}, {
 
@@ -22,56 +22,69 @@
                 method: 'GET',
                 url: '/index.php/api/cliente/:CveCliente',
                 params: {
-                        CveCliente: "@CveCliente"
-                    }
+                    CveCliente: "@CveCliente"
+                }
             }
 
         });
 
     });
-    
-    app.controller('MainController', function(ngDialog){
-       
-       var main = this;
-       
-       main.delete = function()
-       {
-           ngDialog.open({ template: 'resources/js/views/delete.html' });
-       };
-        
-        
+
+    app.service('InvprodtermResource', function ($resource) {
+
+        return $resource("/index.php/invprodterm", {}, {
+
+            items: {
+                method: 'GET',
+                url: '/index.php/api/invprodterm'
+            }
+
+        });
+
     });
-    
-    app.controller('ListCtrl', function (ClientsResource, $timeout, ngDialog, $scope) {
-        
+
+    app.controller('MainController', function(ngDialog){
+
+        var main = this;
+
+        main.delete = function()
+        {
+            ngDialog.open({ template: 'resources/js/views/delete.html' });
+        };
+
+
+    });
+
+    app.controller('ListCtrl', function (ClientsResource, $timeout, ngDialog, $scope, InvprodtermResource) {
+
         var lista = this;
 
         function getClients() {
 
-                var clients = ClientsResource.get({
-                    query: lista.query
-                });
+            var clients = ClientsResource.get({
+                query: lista.query
+            });
 
-                clients.$promise.then(function (data) {
+            clients.$promise.then(function (data) {
 
-                    lista.clients = data.items;
+                lista.clients = data.items;
 
-                });
+            });
 
         }
 
         getClients();
 
         lista.cliente = function(id) {
-          
+
             var client = ClientsResource.get_client({CveCliente: id});
-          
+
             client.$promise.then( function(data) {
-            
+
                 lista.client_name = data.item.NomCliente;
-            
+
             });
-          
+
         };
 
 
@@ -81,7 +94,7 @@
 
             //$timeout(function(){
 
-                getClients();
+            getClients();
 
             //}, 2000);
 
@@ -128,9 +141,9 @@
 
         lista.addItem = function() {
             lista.items.push({
-                qty: 1,
+                CantiOrden: 1,
                 name: '',
-                precio: 0
+                PrecioLista: 0
             });
         };
 
@@ -140,38 +153,55 @@
 
         };
 
-        $scope.products = [
-            "RNS123",
-            "RNS124",
-            "RNS125",
-            "PERFO 111",
-            "PERFO 222",
-            "ZANAHORIA JAJAJ",
-            "UNO MAS"
-
-        ];
-
     });
 
-
-    app.directive('autoComplete', function() {
-        return function(scope, elem, attr) {
-
-                var availableTags = [
-                    "actionScript",
-                    "appleScript",
-                    "asp",
-                    "BASIC"
-                ];
+    app.directive('autoComplete', function(InvprodtermResource) {
+        return {
+            restrict: "A",
+            require: "ngModel",
+            link: function(scope, elem, attr, ngModelCtrl) {
 
                 elem.autocomplete({
-                    source: scope[attr.uiItems]
-                });
+                    source: function (searchTerm, response) {
 
-            };
+                        InvprodtermResource.items(searchTerm).$promise.then(function (autocompleteResults) {
+
+                            response($.map(autocompleteResults.items, function (autocompleteResult) {
+
+                                return {
+                                    label:  autocompleteResult.PTNumArticulo + '-' + autocompleteResult.PTDesc,
+                                    value: autocompleteResult.PTNumArticulo,
+                                    DescArt: autocompleteResult.PTDesc,
+                                    PrecioLista: autocompleteResult.PTPrecioVta
+                                };
+
+                            }));
+
+                        });
+
+                    },
+                    minLength: 3,
+                    select: function(event, ui) {
+
+                        event.preventDefault();
+                        elem.val(ui.item.value);
+
+                        scope.item.DescArt = ui.item.DescArt;
+                        scope.item.PrecioLista = ui.item.PrecioLista;
+
+                        scope.$apply(function() {
+
+                            ngModelCtrl.$setViewValue(ui.item.value);
+
+                        });
+                    },
+                });
+            }
+
+        };
     });
 
-    
+
 })(angular); /* global angular*/
 
 // jQuery

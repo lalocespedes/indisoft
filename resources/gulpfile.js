@@ -50,12 +50,12 @@ gulp.task('styles', function() {
 
 gulp.task('vendor', function() {
     gulp.src([
-        config.bowerDir + '/bootstrap/dist/js/bootstrap.js',
         config.bowerDir + '/angular/angular.js',
         config.bowerDir + '/angular-animate/angular-animate.js',
         config.bowerDir + '/angular-resource/angular-resource.js',
         config.bowerDir + '/angular-sanitize/angular-sanitize.js',
         config.bowerDir + '/angular-ui-router/release/angular-ui-router.min.js',
+        config.bowerDir + '/bootstrap/dist/js/bootstrap.js',
         config.bowerDir + '/angularUtils-pagination/dirPagination.js',
         config.bowerDir + '/angular-toastr/dist/angular-toastr.tpls.js',
         config.bowerDir + '/ng-dialog/js/ngDialog.min.js'
@@ -83,7 +83,7 @@ gulp.task('angular', function() {
         .pipe(gulp.dest(config.publicDir + '/js'))
     //.pipe(rev.manifest('rev-manifiest-angular'))
     //.pipe(revDel({ dest: './public/scripts' }))
-    .pipe(gulp.dest(config.publicDir + '/js'));
+    .pipe(gulp.dest(config.publicDir + '/public/scripts'));
 });
 
 gulp.task('watch', function() {
@@ -94,10 +94,6 @@ gulp.task('watch', function() {
 });
 
 gulp.task('icons', function() {
-
-    gulp.src(config.bowerDir + '/bootstrap/fonts/**.*')
-        .pipe(gulp.dest(config.publicDir + '/fonts/bootstrap'));
-
     return gulp.src(config.bowerDir + '/font-awesome/fonts/**.*')
         .pipe(gulp.dest(config.publicDir + '/fonts'));
 });
