@@ -132,3 +132,12 @@ img.avatar {
     display: inline-block;
     border-radius: 50%;
 }
+
+.my-group .form-control{
+    width:50%;
+}
+
+.input-group-btn:last-child > .form-control {
+    margin-left: -1px;
+    width: auto;
+}

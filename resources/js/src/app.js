@@ -102,22 +102,10 @@
 
         lista.items = [
             {
-                'Producto': 'S830001',
-                'DescArt': 'PERFO 2222',
-                'CantiOrden': 2,
-                'PrecioLista': 1000
-            },
-            {
-                'Producto': 'S830022',
-                'DescArt': 'PERFO 6666',
-                'CantiOrden': 6,
-                'PrecioLista': 15000
-            },
-            {
-                'Producto': 'S830111',
-                'DescArt': 'PERFO 9999',
+                'Producto': '',
+                'DescArt': '',
                 'CantiOrden': 1,
-                'PrecioLista': 18000
+                'PrecioLista': 0
             }
         ];
 
@@ -128,12 +116,21 @@
 
         };
 
-
         lista.total = function() {
 
             var total = 0;
             angular.forEach(lista.items, function(item) {
-                total += item.CantiOrden * item.PrecioLista;
+                total += item.CantiOrden * item.PrecioLista + item.iva;
+            });
+
+            return total;
+        };
+
+        lista.ivatotal = function() {
+
+            var total = 0;
+            angular.forEach(lista.items, function(item) {
+                total += item.iva;
             });
 
             return total;
@@ -153,6 +150,34 @@
 
         };
 
+    });
+
+    app.directive('taxCalculate', function() {
+       return {
+           restrict: "A",
+           require: "ngModel",
+           link: function(scope, elem, attr, ctrl) {
+
+               //console.log(ctrl);
+
+               scope.$watchGroup(['item.PrecioLista', 'item.CantiOrden', 'item.iva_rate'], function(newValues, oldValues, scope) {
+
+                   var iva = +parseFloat((scope.item.PrecioLista * scope.item.CantiOrden) * scope.item.iva_rate).toFixed(2);
+
+                   //var iva = new Date().getTime();
+
+                   ctrl.$setViewValue(iva);
+
+                   ctrl.$render();
+
+                   //scope.item.iva = +parseFloat((scope.item.PrecioLista * scope.item.CantiOrden) * 0.16).toFixed(2);
+
+               }, true);
+
+           }
+
+
+       };
     });
 
     app.directive('autoComplete', function(InvprodtermResource) {
@@ -180,7 +205,7 @@
                         });
 
                     },
-                    minLength: 3,
+                    minLength: 2,
                     select: function(event, ui) {
 
                         event.preventDefault();
@@ -199,6 +224,28 @@
             }
 
         };
+    });
+
+    app.directive('ivaRates', function() {
+        return {
+            restrict: 'E',
+            require: 'ngModel',
+            replace: true,
+            link: function(scope, elem, attr, ctrl) {
+
+                scope.iva_rates = [
+                    '.16',
+                    '0'
+                ];
+
+                ctrl.$setViewValue('.16');
+
+                ctrl.$render();
+
+            },
+            templateUrl: 'iva_rates.html'
+        };
+
     });
 
 

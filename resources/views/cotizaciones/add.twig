@@ -2,11 +2,11 @@
 
 {% block content %}
 
-    <controller ng-controller="ListCtrl as lista">
+    <controller ng-controller="ListCtrl as cotiz">
 
         <h2>Agregar Cotizacion</h2>
 
-        <form ng-submit="lista.send()">
+        <form ng-submit="cotiz.send()">
 
             <div class="well">
                 <div class="dropdown dropdown-scroll">
@@ -17,18 +17,18 @@
                                      <span class="input-group-addon">
                                         <span class="glyphicon glyphicon-search"></span>
                                     </span>
-                                <input type="text" class="form-control" placeholder="Buscar" ng-model="lista.query" ng-change="lista.filter()" ng-minlength="2" ng-model-options='{ debounce: 1000 }'>
+                                <input type="text" class="form-control" placeholder="Buscar" ng-model="cotiz.query" ng-change="cotiz.filter()" ng-minlength="2" ng-model-options='{ debounce: 1000 }'>
                             </div>
                         </li>
-                        <li role="presentation" ng-repeat='item in lista.clients | filter:lista.query'>
-                            <a href="#" ng-click="lista.cliente(item.CveCliente)"> {{ '{{item.NomCliente }}' }}</a>
+                        <li role="presentation" ng-repeat='item in cotiz.clients | filter:cotiz.query'>
+                            <a href="#" ng-click="cotiz.cliente(item.CveCliente)"> {{ '{{item.NomCliente }}' }}</a>
                         </li>
                     </ul>
                 </div>
 
                 <hr>
                 <div>
-                    <strong>Cliente:</strong> <p ng-bind="lista.client_name"></p>
+                    <strong>Cliente:</strong> <p ng-bind="cotiz.client_name"></p>
                 </div>
             </div>
 
@@ -40,28 +40,41 @@
                         <th>Description</th>
                         <th>Qty</th>
                         <th>Precio</th>
+                        <th>iva</th>
+                        <th>%</th>
                         <th>Total</th>
                         <th></th>
                     </tr>
-                    <tr ng-repeat="item in lista.items">
-                        <td><input auto-complete ui-items="products" ng-model-options='{ debounce: 1000 }' type="text" ng-model="item.Producto"class="input-small"></td>
-                        <td><input type="text" ng-model="item.DescArt"class="input-small"></td>
-                        <td><input type="number" ng-model="item.CantiOrden" ng-required class="input-mini"></td>
-                        <td><input type="number" ng-model="item.PrecioLista" ng-required class="input-mini"></td>
-                        <td ng-bind="item.CantiOrden * item.PrecioLista | currency"></td>
+                    <tr ng-repeat="item in cotiz.items">
+                        <td><input auto-complete ui-items="products" ng-model-options='{ debounce: 1000 }' type="text" ng-model="item.Producto"class="form-control"></td>
+                        <td><input type="text" ng-model="item.DescArt" class="form-control" style="min-width: 225px;"></td>
+                        <td><input type="number" step="any" ng-model="item.CantiOrden" ng-required class="form-control" style="max-width: 85px;"></td>
+                        <td><input type="number" step="any" ng-model="item.PrecioLista" ng-required class="form-control" style="max-width: 175px;"></td>
                         <td>
-                            <a href ng-click="lista.removeItem($index)">X</a>
+                            <input type="number" step="any" ng-model="item.iva" ng-required class="form-control" tax-calculate style="max-width: 155px;">
+                        </td>
+                        <td><iva-rates ng-model="item.iva_rate"></iva-rates></td>
+                        <td ng-bind="item.CantiOrden * item.PrecioLista + item.iva | currency" style="font-weight: bold;"></td>
+                        <td>
+                            <a href ng-click="cotiz.removeItem($index)" class="btn btn-danger btn-sm">X</a>
                         </td>
                     </tr>
                     <tr>
-                        <td><a href ng-click="lista.addItem()" class="btn btn-small btn-success">add item</a></td>
+                        <td><a href ng-click="cotiz.addItem()" class="btn btn-small btn-success">add item</a></td>
                         <td></td>
                         <td></td>
-                        <td>Total:</td>
-                        <td ng-bind="lista.total() | currency"></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
                     </tr>
                 </table>
-
+            <div class="row text-right" style="font-size: 2em;">
+                <div class="col-md-6 col-md-offset-6">
+                    <p>Iva: <ivatotal ng-bind="cotiz.ivatotal() | currency"></ivatotal></p>
+                    <p>Total:  <total ng-bind="cotiz.total() | currency"></total></p>
+                </div>
+            </div>
             <div class="row">
             <div class="col-md-4 col-md-offset-4">
                 <button class="btn btn-success btn-block"> <i class="fa fa-save fa-3x"></i> </button>
